@@ -34,6 +34,7 @@ def sum(a,b):
 #
 
 ### Upcoming Updates
-1. Support for any function, not just global functions.
-2. Support for any Python class
-3. Support for multiple different docstring templates
+1. Add support for functions inside functions.
+2. Add support for Python classes.
+3. Add support for multiple different docstring templates.
+4. Improve code import method.
