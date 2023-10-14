@@ -1,4 +1,5 @@
 def getCode():
+
     code = input("Paste your code (CTRL+SHIFT+V). Enter 'q' when you're done.\n") + "\n"
     while 1:
         line = input()
@@ -7,6 +8,7 @@ def getCode():
         code += line + "\n"
 
 def getArguments(line):
+
     args = []
     size = len(line)
     word = ""
@@ -31,6 +33,7 @@ def getArguments(line):
     return args
 
 def setDocstring(lines, i):
+
     args = getArguments(lines[i])
     docstring = f'    """\n    Add Description Here\n\n'
     for arg in args:
@@ -39,6 +42,7 @@ def setDocstring(lines, i):
     lines[i] += f'\n{docstring}'
 
 def getDefsPositions(lines):
+
     positions = []
     for i in range(len(lines)):
         if lines[i].startswith('def '):
@@ -46,6 +50,7 @@ def getDefsPositions(lines):
     return positions
 
 def addDocstrings(code):
+
     lines = code.split('\n')
     positions = getDefsPositions(lines)
     for i in positions:
@@ -54,10 +59,18 @@ def addDocstrings(code):
     return code
 
 def create_file(filename, code):
-    with open(filename, 'w') as file:
-        file.write(code)
+    
+    try: 
+        file = open(filename,'r')
+        print("This file already exists\n Docstrings not added.\n")
+        return False
+    except:
+        with open(filename, 'w') as file:
+            file.write(code)
+            return True
 
 def main():
+
     running = True
     while running:
         filename = input("Name your NEW file: ") + ".py"
@@ -65,7 +78,7 @@ def main():
         code = addDocstrings(code)
         create_file(filename, code)
         while running:
-            choice = input("Do you wish to docstring more programs? Y|N\n").upper()
+            choice = input("Do you wish to docstring something? Y|N\n").upper()
             if choice == "N":
                 return
             if choice == "Y":
