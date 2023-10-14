@@ -1,5 +1,5 @@
 # dsMaker4Python
-This simple program will add template docstrings to your global Python functions.
+Docstring Maker for Python. This python program will add template docstrings to all your functions. Currently only supports functions on the global scope.
 
 Updates coming soon.
 #
