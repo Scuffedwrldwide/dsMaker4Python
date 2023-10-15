@@ -1,88 +1,107 @@
-def getCode():
+import os
+TAB = "    " # Change docstring indentation here
 
-    code = input("Paste your code (CTRL+SHIFT+V). Enter 'q' when you're done.\n") + "\n"
-    while 1:
-        line = input()
-        if line == 'q':
-            return code
-        code += line + "\n"
+def getCode(filename):
+    with open(filename, 'r') as file:
+        code = file.read()
+    return code
+    
+    
 
 def getArguments(line):
-
     args = []
     size = len(line)
-    word = ""
+    word = ''
     for i in range(size):
-    # Ignore up until the first parentheses
         if line[i] == '(':
             j = i + 1
             while j < size and line[j] != ')':
-                # Words are any characters besides spaces and commas
-                if line[j] != "," and line[j] != " ":
+                if line[j] != ',' and line[j] != ' ':
                     word += line[j]
                 else:
-                # If it finds a space or a comma, finishes the word and adds to the list
-                    if word != "":
+                    if word != '':
                         args.append(word)
-                    word = ""
+                    word = ''
                 j += 1
             break
-    # Add last argument
-    if word != "":
+    if word != '':
         args.append(word)
     return args
+    
+def countSpace(line):
+    count = 0
+    for i in range(len(line)):
+        if line[i] == ' ':
+            count += 1
+        else:
+            break
+    return count
 
-def setDocstring(lines, i):
-
-    args = getArguments(lines[i])
-    docstring = f'    """\n    Add Description Here\n\n'
+def setDocstring(line):
+    args = getArguments(line)
+    space = TAB + " " * countSpace(line)
+    docstring = f'{space}"""\n{space}Add Description Here\n\n'
     for arg in args:
-        docstring += f'    :param {arg}: Add Type\n'
-    docstring += f'    :return: Add Type\n    """\n'
-    lines[i] += f'\n{docstring}'
+        docstring += f'{space}:param {arg}: Add Type\n'
+    docstring += f'{space}:return: Add Type\n{space}"""\n'
+    line += f'\n{docstring}'
+    return line
+
 
 def getDefsPositions(lines):
-
     positions = []
     for i in range(len(lines)):
-        if lines[i].startswith('def '):
+        temp = lines[i].strip()
+        if temp.startswith('def '):
             positions.append(i)
     return positions
+    
 
 def addDocstrings(code):
-
     lines = code.split('\n')
     positions = getDefsPositions(lines)
     for i in positions:
-        setDocstring(lines, i)
+        lines[i] = setDocstring(lines[i])
     code = '\n'.join(lines)
     return code
+    
 
 def create_file(filename, code):
-    
-    try: 
-        file = open(filename,'r')
-        print("This file already exists\n Docstrings not added.\n")
+    filename += '.py'
+    try:
+        file = open(filename, 'r')
+        print('This file already exists\n Docstrings not added.\n')
         return False
     except:
         with open(filename, 'w') as file:
             file.write(code)
             return True
+    
+def searchFile(filename):
+    directory = '.'
+    filepath = None
+    for root, dirs, files in os.walk(directory):
+        if filename in files:
+            filepath = os.path.join(root, filename)
+            break
+    if filepath is not None:
+        return filepath
+    else:
+        return None
 
 def main():
+    while 1:
+        try:
+            filename = input('Insert filename: ')
+            code = getCode(searchFile(filename + ".py"))
+            break
+        except:
+            print('File not found\n')
+            return 1
 
-    running = True
-    while running:
-        filename = input("Name your NEW file: ") + ".py"
-        code = getCode()
-        code = addDocstrings(code)
-        create_file(filename, code)
-        while running:
-            choice = input("Do you wish to docstring something? Y|N\n").upper()
-            if choice == "N":
-                return
-            if choice == "Y":
-                break
-    return
+    code = addDocstrings(code)
+    filename = "doc_" + filename
+    create_file(filename, code)
+    return 0
 
 main()
